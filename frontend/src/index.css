@@ -1,0 +1,75 @@
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+.mainDiv {
+	margin: auto;
+	max-width: 400px;
+	border-radius: 10px;
+	box-shadow: 0 0 10px 2px blue;
+	padding: 1rem;
+}
+
+.stackAndCenter {
+	display: flex;
+	flex-direction: column;
+
+}
+
+.mb-s {
+	margin-bottom: 1rem;
+}
+
+.exampleDiv {
+	background-color: pink;
+}
+
+.fullSizeGameDiv {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content:space-between;
+}
+
+.topDiv {
+	background-color: aqua;
+	flex: 0.15;
+}
+
+.middleDiv {
+	background-color: brown;
+	display: flex;
+	justify-content: space-between;
+	flex: 0.30;
+}
+
+.middleLeft {
+	background-color: lightskyblue;
+	flex: 0.15;
+}
+
+.middleCentre {
+	background-color: red;
+	flex: 1;
+}
+
+.middleRight {
+	background-color: purple;
+	flex: 0.15;
+}
+
+.bottomDiv {
+	background-color: orange;
+	flex: 0.55;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.cardSize {
+	width: 150px;
+	margin-left: -7.5rem;
+}
