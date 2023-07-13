@@ -46,19 +46,17 @@
 	flex: 0.30;
 }
 
-.middleLeft {
+.smallMiddle {
 	background-color: lightskyblue;
-	flex: 0.15;
+	flex: 0.25;
 }
 
 .middleCentre {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	background-color: red;
 	flex: 1;
-}
-
-.middleRight {
-	background-color: purple;
-	flex: 0.15;
 }
 
 .bottomDiv {
@@ -72,4 +70,58 @@
 .cardSize {
 	width: 150px;
 	margin-left: -7.5rem;
+}
+
+.cardSize:hover {
+	border: 3px solid rgb(7, 151, 176);
+	transform: translate(0, -8rem);
+	/* transition-duration: 0.2s; */
+}
+
+.cardBack {
+	width: 75px;
+	margin-left: -4rem;;
+}
+
+.playerNames {
+	text-align: center;
+	margin-bottom: 1.5rem;
+}
+
+.lastCardButton {
+	background-color: rgb(127, 0, 0);
+	color: white;
+	font-size: 1.5rem;
+	padding: 0.7rem;
+	width: 50%;
+	border-radius: 5%;
+}
+
+.lastCardButton p {
+	text-align: center;
+	animation: blink-text 1.5s linear infinite;
+}
+
+@keyframes blink-text {
+	0% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.flex-items-center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.cardsDiv {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

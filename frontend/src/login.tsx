@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import io from 'socket.io-client';
 
 const LoginPage = (attributes: any) => {
 	
@@ -16,6 +17,15 @@ const LoginPage = (attributes: any) => {
 	const handleLobbyNameChange = (e:any) => {
 		setLobbyName(e.target.value);
 	}
+
+	useEffect(() => {
+		const socket = io('http://localhost:3001');
+		socket.emit('client_sending_message_to_server', 'testing client to server message');
+		socket.on('server_sending_message_to_client', (data) => {
+			console.log('received message from server');
+			console.log(data);
+		})
+	}, [])
 	
 	return (
     <div className="mainDiv">

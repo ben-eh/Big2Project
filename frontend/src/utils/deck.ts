@@ -1,5 +1,7 @@
 export default class Deck {
 
+	public suitValue: any = { 'd': 0, 'c': 1, 'h': 2, 's': 3 };
+	
 	private deck: string[];
 
 	constructor(cardMap: any) {
@@ -30,6 +32,32 @@ export default class Deck {
 		return players;
 	}
 
+	sortHand(a: any, b: any) {
+		const suitA = a.charAt(0);
+		const suitB = b.charAt(0);
+		const numberA = parseInt(a.slice(1));
+		const numberB = parseInt(b.slice(1));
+	
+		const adjustedNumberA = numberA === 2 ? 100 : numberA === 1 ? 99 : numberA;
+		const adjustedNumberB = numberB === 2 ? 100 : numberB === 1 ? 99 : numberB;
+	
+		if (adjustedNumberA > adjustedNumberB) { // Reverse the comparison for descending order
+			return -1;
+		}
+		if (adjustedNumberA < adjustedNumberB) { // Reverse the comparison for descending order
+			return 1;
+		}
+	
+		if (this.suitValue[suitA] < this.suitValue[suitB]) {
+			return -1;
+		}
+		if (this.suitValue[suitA] > this.suitValue[suitB]) {
+			return 1;
+		}
+	
+		return 0;
+	}
+	
 	printDeck = () => {
 		console.log(this.deck);
 	}

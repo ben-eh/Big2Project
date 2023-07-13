@@ -1,40 +1,43 @@
 import { useEffect, useState } from "react";
 import cardMap from "./utils/cardMap";
 import Deck from "./utils/deck";
+import OtherPlayer from "./components/OtherPlayer";
+import { simpleSortHand } from "./utils/hands";
 
 const GamePage = () => {
 
-	const [ myCards, setMyCards ] = useState([]);
+	const [ playerHands, setPlayerHands ] = useState<any>({});
+	const [ currentPlayersTurn, setCurrentPlayersTurn ] = useState<number>(1);
 	
 	useEffect(() => {
 		const deck = new Deck(cardMap);
 		deck.shuffle();
 		const playerHands = deck.dealAllCards(4);
-		const player1Hand = playerHands[1];
-		setMyCards(player1Hand);
+		playerHands[1] = simpleSortHand(playerHands[1]);
+		setPlayerHands(playerHands);
 	}, []);
 
 	return(
 		<div className="fullSizeGameDiv">
-			<div className="topDiv">
-				top
+			<div className="topDiv flex-items-center">
+				<OtherPlayer name="Adam" hand={playerHands[3]} />
 			</div>
 			<div className="middleDiv">
-				<div className="middleLeft">
-					middleLeft
+				<div className="smallMiddle flex-items-center">
+					<OtherPlayer name="Tenzin" hand={playerHands[2]} />
 				</div>
 				<div className="middleCentre">
 					middleCentre
 				</div>
-				<div className="middleRight">
-					middleRigt
+				<div className="smallMiddle flex-items-center">
+					<OtherPlayer name="Nithin" hand={playerHands[4]} />
 				</div>
 			</div>
 			<div className="bottomDiv">
 				<div className="myCards">
 					{/* <img src="./assets/cards/ace_of_hearts.png" alt="" /> */}
 					{
-						myCards.map((card) => {
+						playerHands[currentPlayersTurn] && simpleSortHand(playerHands[currentPlayersTurn]).map((card: string) => {
 							return(
 								<img
 									key={card}
