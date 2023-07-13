@@ -1,6 +1,10 @@
 import app from './app';
 import { Server } from 'socket.io';
 
+const rooms: any = {
+	legendsRoom: []
+}
+
 const port = 3001;
 
 const server = app.listen(port, () => {
@@ -21,9 +25,21 @@ io.on('connection', (socket) => {
 		console.log('user has disconnected');
 	})
 	// put custom messages here
-	socket.on('client_sending_message_to_server', (data) => {
-		console.log('testing custom message');
+	// socket.on('client_sending_message_to_server', (data) => {
+	// 	console.log('testing custom message');
+	// 	console.log(data);
+	// 	socket.emit('server_sending_message_to_client', 'this is data to send');
+	// })
+	socket.on('login_attempt', (data) => {
+		if (isValidCredentials(data)) {
+			
+		} else {
+
+		}
 		console.log(data);
-		socket.emit('server_sending_message_to_client', 'this is data to send');
 	})
 });
+
+const isValidCredentials = (data): boolean => {
+	const validUsernames = 
+}
