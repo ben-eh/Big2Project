@@ -20,7 +20,7 @@ const socketOptions = {
 const io = new Server(server, socketOptions);
 
 io.on('connection', (socket) => {
-	console.log('user has connected');
+	// console.log('user has connected');
 	socket.on('disconnect', () => {
 		console.log('user has disconnected');
 	})
@@ -30,16 +30,18 @@ io.on('connection', (socket) => {
 	// 	console.log(data);
 	// 	socket.emit('server_sending_message_to_client', 'this is data to send');
 	// })
-	socket.on('login_attempt', (data) => {
+	socket.on('login_attempt', (data: any) => {
 		if (isValidCredentials(data)) {
-			
+			socket.emit('login_response', 'pass');
 		} else {
-
+			socket.emit('login_response', 'fail');
 		}
 		console.log(data);
 	})
 });
 
-const isValidCredentials = (data): boolean => {
-	const validUsernames = 
+const isValidCredentials = (data: any): boolean => {
+	const regex = /^\w*\d*$/;
+	const { username, lobbyname } = data;
+	return (regex.test(username) && regex.test(lobbyname)) ? true : false;
 }
