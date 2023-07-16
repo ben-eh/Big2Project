@@ -32,9 +32,9 @@ io.on('connection', (socket) => {
 	// })
 	socket.on('login_attempt', (data: any) => {
 		if (isValidCredentials(data)) {
-			socket.emit('login_response', 'pass');
+			socket.emit('login_response', true);
 		} else {
-			socket.emit('login_response', 'fail');
+			socket.emit('login_response', false);
 		}
 		console.log(data);
 	})

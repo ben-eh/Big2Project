@@ -12,21 +12,42 @@ const LoginPage = (attributes: any) => {
 			username,
 			lobbyname
 		}
-		login(loginData);
-		// socket.on('', (data) => {
+		// login(loginData);
+		// if ( login(loginData) ) {
+		// 	attributes.setCurrentPage('game');
+		// } else {
+		// 	setusername('');
+		// 	setlobbyname('');
+		// 	alert('login failed');
+		// };
+		login(loginData)
+			.then((response) => {
+				console.log(response);
+			})
 
-		// })
-		// attributes.setCurrentPage('game');
 	}
 
-	const login = (data: any) => {
-		console.log('this should fire when I click button');
-		socket.emit('login_attempt', data);
-		socket.on('login_response', (returnData) => {
-			console.log(returnData);
+	// const login = async (data: any): Promise<boolean> => {
+	// 	console.log('this should fire when I click button');
+	// 	socket.emit('login_attempt', data);
+	// 	let response: boolean = true;
+	// 	socket.on('login_response', (returnData) => {
+	// 		response = returnData;
+	// 	});
+	// 	console.log(`response is ${response}`);
+	// 	return response;
+	// }
+
+	const login = (data: any): Promise<boolean> => {
+		return new Promise((resolve) => {
+			socket.emit('login_attempt', data);
+			
+			socket.on('login_response', (returnData) => {
+				resolve(returnData);
+			});
 		});
-
-	}
+	};
+	
 	
 	const handleUsernameChange = (e:any) => {
 		setusername(e.target.value);
