@@ -1,53 +1,39 @@
 import { useEffect, useState } from "react";
 import io from 'socket.io-client';
+import { useSocket } from "./socketContext";
 
 const LoginPage = (attributes: any) => {
 	
 	const [username, setusername] = useState('');
 	const [lobbyname, setlobbyname] = useState('');
-	const socket = io('http://localhost:3001');
+	const {socket, login} = useSocket();
 	
-	const handleClickedButton = () => {
+	const handleClickedButton = async () => {
 		const loginData = {
 			username,
 			lobbyname
 		}
-		// login(loginData);
-		// if ( login(loginData) ) {
-		// 	attributes.setCurrentPage('game');
-		// } else {
-		// 	setusername('');
-		// 	setlobbyname('');
-		// 	alert('login failed');
-		// };
-		login(loginData)
-			.then((response) => {
-				console.log(response);
-			})
+		
+		// login(loginData)
+		// 	.then((response) => {
+		// 			attributes.setCurrentPage('game');
+		// 	})
+		// 	.catch((error) => {
+		// 		setusername('');
+		// 		setlobbyname('');
+		// 		alert('only alphanumeric and underscore characters allowed')
+		// 	} )
 
+		try {
+			await login(loginData);
+			attributes.setCurrentPage('game');
+		}
+		catch(error) {
+			setusername('');
+			setlobbyname('');
+			(error === 'room_full') ? alert('room is full') : alert('only alphanumeric and underscore characters allowed');
+		}
 	}
-
-	// const login = async (data: any): Promise<boolean> => {
-	// 	console.log('this should fire when I click button');
-	// 	socket.emit('login_attempt', data);
-	// 	let response: boolean = true;
-	// 	socket.on('login_response', (returnData) => {
-	// 		response = returnData;
-	// 	});
-	// 	console.log(`response is ${response}`);
-	// 	return response;
-	// }
-
-	const login = (data: any): Promise<boolean> => {
-		return new Promise((resolve) => {
-			socket.emit('login_attempt', data);
-			
-			socket.on('login_response', (returnData) => {
-				resolve(returnData);
-			});
-		});
-	};
-	
 	
 	const handleUsernameChange = (e:any) => {
 		setusername(e.target.value);
@@ -56,14 +42,6 @@ const LoginPage = (attributes: any) => {
 	const handleLobbynameChange = (e:any) => {
 		setlobbyname(e.target.value);
 	}
-
-	// useEffect(() => {
-	// 	socket.emit('client_sending_message_to_server', 'testing client to server message');
-	// 	socket.on('server_sending_message_to_client', (data) => {
-	// 		console.log('received message from server');
-	// 		console.log(data);
-	// 	})
-	// }, [])
 	
 	return (
     <div className="mainDiv">

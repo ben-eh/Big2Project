@@ -31,12 +31,29 @@ io.on('connection', (socket) => {
 	// 	socket.emit('server_sending_message_to_client', 'this is data to send');
 	// })
 	socket.on('login_attempt', (data: any) => {
-		if (isValidCredentials(data)) {
-			socket.emit('login_response', true);
-		} else {
-			socket.emit('login_response', false);
+		const {username, lobbyname} = data;
+		let players = rooms[lobbyname];
+		if (!players) {
+			players = [];
 		}
-		console.log(data);
+		const roomLength = players.length;
+		const playerNumber = roomLength + 1;
+		if (roomLength >= 4) {
+			socket.emit('login_response', {error: 'room_full'})
+			return;
+		}
+		if (isValidCredentials(data)) {
+			players.push({username, playerNumber});
+			socket.join(lobbyname);
+			rooms[lobbyname] = players;
+			const playerList = {
+				players
+			}
+			socket.to(lobbyname).emit('player_list_updated', playerList);
+			socket.emit('login_response', {username, playerNumber});
+		} else {
+			socket.emit('login_response', {error: 'invalid_credentials'});
+		}
 	})
 });
 
