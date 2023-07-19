@@ -3,18 +3,14 @@ import cardMap from "./utils/cardMap";
 import Deck from "./utils/deck";
 import OtherPlayer from "./components/OtherPlayer";
 import { simpleSortHand } from "./utils/hands";
-import { io } from "socket.io-client";
 import { useSocket } from "./socketContext";
 
 const GamePage = () => {
 
 	const [ playerHands, setPlayerHands ] = useState<any>({});
 	const [ currentPlayersTurn, setCurrentPlayersTurn ] = useState<number>(1);
-	const {socket, username, playerNumber, playerList} = useSocket();
+	const { playerNumber, players } = useSocket();
 	
-	socket && socket.on('message', (data) => {
-		console.log(`${data} has entered the chat.`);
-	});
 	
 	useEffect(() => {
 		const deck = new Deck(cardMap);
@@ -24,7 +20,7 @@ const GamePage = () => {
 		setPlayerHands(playerHands);
 	}, []);
 
-	console.log(username, playerNumber, playerList);
+	console.log(players);
 
 	return(
 		<div className="fullSizeGameDiv">

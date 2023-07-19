@@ -1,67 +1,106 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { Socket, io } from 'socket.io-client';
+import { createContext, useState, useContext, useEffect } from 'react';
+import io, { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
-type SocketContextData = {
-	socket?: Socket;
-	login: (data: any)=>void;
-	username?: string;
-	playerNumber?: string;
-	error?: string;
-	playerList?: string[];
+export type Player = {
+    id: string;
+    username: string;
 }
+
+export type SocketContextData = {
+    isConnected: boolean;
+    players: Player[];
+	playerNumber?: number;
+    error?: string;
+    username?: string;
+    room?: string;
+    connectToRoom: (username: string, roomName: string) => void;
+    disconnectFromRoom: () => void;
+    sendEvent: (event: string, data?: any) => void;
+    listenForEvent: (event: string, callback: (data?: any) => void) => void;
+};
 
 const DEFAULT_CONTEXT_DATA: SocketContextData = {
-	login: () => {},
-};
-
-const SOCKET_CONTEXT = createContext<SocketContextData>(DEFAULT_CONTEXT_DATA);
-
-const SocketProvider = ({children}: any) => {
-	const [ socket, setSocket ] = useState<any>(io('http://localhost:3001'));
-	const [ username, setUsername ] = useState();
-	const [ playerNumber, setPlayerNumber ] = useState();
-	const [ error, setError ] = useState();
-	const [ playerList, setPlayerList ] = useState();
-
-	// useEffect(() => {
-	// 	const newSocket = io('http://localhost:3001');
-	// 	setSocket(newSocket);
-	// 	newSocket && newSocket.on('player_list_updated', (playerListData) => {
-	// 		console.log('this is in useeffect function');
-	// 		setPlayerList(playerListData);
-	// 	})
-	// }, []);
-
-	const login = (data: any): void => {
-			socket && socket.emit('login_attempt', data);
-			
-			socket && socket.on('login_response', (returnData: any) => {
-				if (!returnData.error) {
-					setUsername(returnData.username);
-					setPlayerNumber(returnData.playerNumber);
-				} else {
-					setError(returnData.error);
-				}
-			});
-
-			socket && socket.on('player_list_updated', (playerListData: any) => {
-				console.log('this is in useeffect function');
-				setPlayerList(playerListData);
-			})
-	};
-	return (
-
-		<SOCKET_CONTEXT.Provider value={ {
-			socket, login, username, playerNumber, error, playerList
-		} }>
-			{children}
-		</SOCKET_CONTEXT.Provider>
-	)
-};
-
-const useSocket = () => {
-	const context = useContext(SOCKET_CONTEXT);
-	return context;
+    isConnected: false,
+    players: [],
+    connectToRoom: () => {},
+    disconnectFromRoom: () => {},
+    sendEvent: () => {},
+    listenForEvent: () => {},
 }
 
-export { SocketProvider, useSocket };
+const SocketContext = createContext<SocketContextData>(DEFAULT_CONTEXT_DATA);
+
+type Props = {
+    url: string;
+    children: any;
+}
+const SocketProvider = ({ url, children }: Props) => {
+    const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
+    const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [error, setError] = useState<string>();
+    const [username, setUsername] = useState<string>();
+    const [room, setRoom] = useState<string>();
+    const [playerNumber, setPlayerNumber] = useState<number>();
+
+    useEffect(() => {
+        const socket = io(url);
+        socket.on('connected_to_room', () => {
+            setIsConnected(true);
+        });
+        socket.on('player_connected', (newPlayerList: Player[]) => {
+            setPlayers(newPlayerList);
+        });
+        socket.on('player_disconnected', (newPlayerList: Player[]) => {
+            setPlayers(newPlayerList);
+        });
+        socket.on('could_not_connect', ({ reason }) => {
+            setError(reason);
+            setUsername(undefined);
+            setRoom(undefined);
+        });
+        setSocket(socket);
+    }, [url]);
+
+    const connectToRoom = (username: string, roomName: string) => {
+        socket && socket.emit('connect_to_room', { username, roomName });
+        setUsername(username);
+        setRoom(roomName);
+    };
+
+    const disconnectFromRoom = () => {
+        room && socket && socket.disconnect();
+    };
+
+    const sendEvent = (event: string, data?: any) => {
+        socket && socket.emit(event, data);
+    };
+
+    const listenForEvent = (event: string, callback: (data?: any) => void) => {
+        socket && socket.on(event, callback);
+    };
+
+    return (
+        <SocketContext.Provider value={{
+			playerNumber,
+            players,
+            isConnected,
+            error,
+            username,
+            room,
+            connectToRoom,
+            disconnectFromRoom,
+            sendEvent,
+            listenForEvent,
+        }}>{children}</SocketContext.Provider>
+    );
+};
+
+const useSocket = (): SocketContextData => {
+    const context = useContext(SocketContext);
+    if (!context) throw new Error('useSocket must be used within an AuthProvider');
+    return context;
+}
+
+export { SocketContext, SocketProvider, useSocket };
