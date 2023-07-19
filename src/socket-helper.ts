@@ -71,7 +71,7 @@ export default class SocketHelper {
             socket.join(roomName);
     
             const playerId = socket.id;
-            const playerNumber = players.length;
+            const playerNumber = players.length + 1;
             players.push({ id: playerId, username, socket, playerNumber });
             this._rooms[roomName] = players;
     

@@ -10,7 +10,7 @@ export type Player = {
 export type SocketContextData = {
     isConnected: boolean;
     players: Player[];
-	playerNumber?: number;
+		playerNumber?: number;
     error?: string;
     username?: string;
     room?: string;
@@ -83,7 +83,7 @@ const SocketProvider = ({ url, children }: Props) => {
 
     return (
         <SocketContext.Provider value={{
-			playerNumber,
+						playerNumber,
             players,
             isConnected,
             error,
