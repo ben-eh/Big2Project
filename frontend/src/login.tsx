@@ -1,38 +1,18 @@
 import { useEffect, useState } from "react";
-import io from 'socket.io-client';
 import { useSocket } from "./socketContext";
 
-const LoginPage = (attributes: any) => {
+const LoginPage = () => {
 	
 	const [username, setusername] = useState('');
 	const [lobbyname, setlobbyname] = useState('');
-	const {socket, login} = useSocket();
-	
-	const handleClickedButton = async () => {
-		const loginData = {
-			username,
-			lobbyname
-		}
-		
-		// login(loginData)
-		// 	.then((response) => {
-		// 			attributes.setCurrentPage('game');
-		// 	})
-		// 	.catch((error) => {
-		// 		setusername('');
-		// 		setlobbyname('');
-		// 		alert('only alphanumeric and underscore characters allowed')
-		// 	} )
+	const { connectToRoom, error } = useSocket();
 
-		try {
-			await login(loginData);
-			attributes.setCurrentPage('game');
-		}
-		catch(error) {
-			setusername('');
-			setlobbyname('');
-			(error === 'room_full') ? alert('room is full') : alert('only alphanumeric and underscore characters allowed');
-		}
+	useEffect(() => {
+		if (error) alert(error);
+	}, [error]);
+	
+	const handleClickedJoin = async () => {
+		connectToRoom(username, lobbyname);
 	}
 	
 	const handleUsernameChange = (e:any) => {
@@ -65,7 +45,7 @@ const LoginPage = (attributes: any) => {
 						type="text"
 					/>
 					<button
-						onClick={handleClickedButton}>
+						onClick={handleClickedJoin}>
 						Let's gooooooooooooo!!!
 					</button>
 				</div>
