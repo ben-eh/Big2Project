@@ -15,6 +15,7 @@ export type SocketContextData = {
     error?: string;
     username?: string;
     room?: string;
+		playerHands?: any;
     connectToRoom: (username: string, roomName: string) => void;
     disconnectFromRoom: () => void;
     sendEvent: (event: string, data?: any) => void;
@@ -44,6 +45,7 @@ const SocketProvider = ({ url, children }: Props) => {
     const [username, setUsername] = useState<string>();
     const [room, setRoom] = useState<string>();
     const [playerNumber, setPlayerNumber] = useState<number>();
+		const [playerHands, setPlayerHands] = useState<any>();
 
     useEffect(() => {
         const socket = io(url);
@@ -53,6 +55,9 @@ const SocketProvider = ({ url, children }: Props) => {
         });
         socket.on('player_connected', (newPlayerList: Player[]) => {
             setPlayers(newPlayerList);
+						if (newPlayerList.length === 2) {
+							socket.emit('start_button', newPlayerList);
+						}
         });
         socket.on('player_disconnected', (newPlayerList: Player[]) => {
             setPlayers(newPlayerList);
@@ -83,6 +88,10 @@ const SocketProvider = ({ url, children }: Props) => {
         socket && socket.on(event, callback);
     };
 
+		listenForEvent('player_cards', (data) => {
+			setPlayerHands(data);
+		})
+		
     return (
         <SocketContext.Provider value={{
 						playerNumber,
@@ -91,6 +100,7 @@ const SocketProvider = ({ url, children }: Props) => {
             error,
             username,
             room,
+						playerHands,
             connectToRoom,
             disconnectFromRoom,
             sendEvent,

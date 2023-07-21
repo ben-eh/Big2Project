@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import cardMap from "./utils/cardMap";
-import Deck from "./utils/deck";
 import OtherPlayer from "./components/OtherPlayer";
 import { simpleSortHand } from "./utils/hands";
 import { Player, useSocket } from "./socketContext";
+import cardMap from "./utils/cardMap";
 
 const GamePage = () => {
 
-	const [ playerHands, setPlayerHands ] = useState<any>({});
 	const [ currentPlayersTurn, setCurrentPlayersTurn ] = useState<number>(1);
-	const { username, playerNumber, players } = useSocket();
-	
+	const { username, playerNumber, players, sendEvent, playerHands, room } = useSocket();
+
+	const handleDealCards = () => {
+		sendEvent('deal_cards', room);
+	}
 	
 	// useEffect(() => {
 	// 	const deck = new Deck(cardMap);
@@ -20,34 +21,58 @@ const GamePage = () => {
 	// 	setPlayerHands(playerHands);
 	// 	console.log(playerNumber);
 	// }, []);
-
+	
+	const isGameStarted = () => playerHands !== undefined;
+	
+	// this function finds a player by player number, this does not care about our (socket's) playerNumber
 	const findPlayerByPlayerNumber = (playerNumber: number): Player => {
 		const validatedPlayerNumber = playerNumber === 4 ? 4 : playerNumber % 4;
 		const playersList: Player[] = players.filter((player) => validatedPlayerNumber === player.playerNumber);
 		return playersList[0];
 	}
 
+	// this is just a check to make sure that we can find a player by their playerNumber
+	const shouldShowPlayer = (offset: number): boolean => {
+		return playerNumber !== undefined && findPlayerByPlayerNumber(playerNumber + offset) !== undefined;
+	}
+
+	const getUsername = (offset: number): string => {
+		if (playerNumber === undefined) {
+			return '';
+		}
+		const player = findPlayerByPlayerNumber(playerNumber + offset);
+		return player.username;
+	}
+
+	const getPlayerHand = (offset: number): string[] => {
+		if (playerNumber === undefined || playerHands === undefined) {
+			return [];
+		}
+		const player = findPlayerByPlayerNumber(playerNumber + offset);
+		return playerHands[player.playerNumber];
+	}
+
 	return(
 		<div className="fullSizeGameDiv">
 			<div className="topDiv flex-items-center">
-				<OtherPlayer name={(playerNumber !== undefined && findPlayerByPlayerNumber(playerNumber + 2)) ? findPlayerByPlayerNumber(playerNumber + 2).username : 'waiting on player'} hand={playerHands[3]} />
+				<OtherPlayer name={shouldShowPlayer(2) ? getUsername(2) : 'waiting on player'} hand={shouldShowPlayer(2) ? getPlayerHand(2): []} />
 			</div>
 			<div className="middleDiv">
 				<div className="smallMiddle flex-items-center">
-					<OtherPlayer name={(playerNumber !== undefined && findPlayerByPlayerNumber(playerNumber + 1)) ? findPlayerByPlayerNumber(playerNumber + 1).username : 'waiting on player'} hand={playerHands[2]} />
+					<OtherPlayer name={shouldShowPlayer(1) ? getUsername(1) : 'waiting on player'} hand={shouldShowPlayer(1) ? getPlayerHand(1): []} />
 				</div>
 				<div className="middleCentre">
 					middleCentre
 				</div>
 				<div className="smallMiddle flex-items-center">
-					<OtherPlayer name={(playerNumber !== undefined && findPlayerByPlayerNumber(playerNumber + 3)) ? findPlayerByPlayerNumber(playerNumber + 3).username : 'waiting on player'} hand={playerHands[4]} />
+					<OtherPlayer name={shouldShowPlayer(3) ? getUsername(3) : 'waiting on player'} hand={shouldShowPlayer(4) ? getPlayerHand(4): []} />
 				</div>
 			</div>
 			<div className="bottomDiv">
 				<div className="myCards">
 					{/* <img src="./assets/cards/ace_of_hearts.png" alt="" /> */}
 					{
-						playerHands[currentPlayersTurn] && simpleSortHand(playerHands[currentPlayersTurn]).map((card: string) => {
+						playerHands && playerNumber && playerHands[playerNumber] && simpleSortHand(playerHands[playerNumber]).map((card: string) => {
 							return(
 								<img
 									key={card}
@@ -58,6 +83,15 @@ const GamePage = () => {
 							)
 						})
 					}
+				</div>
+				<div>
+					{players.length === 4 && !isGameStarted() ? (
+						<div className="dealCardsButton"
+						onClick={handleDealCards}
+						>
+							DEAL CARDS
+						</div>
+					) : null}
 				</div>
 			</div>
 		</div>
@@ -79,4 +113,8 @@ const playas = [
 		playerNumber: 2
 	}
 ]
+
+function sendEvent(arg0: string) {
+	throw new Error("Function not implemented.");
+}
 

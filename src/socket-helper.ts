@@ -1,6 +1,8 @@
 import { Server, Socket } from "socket.io";
 // import { v4 as uuidv4 } from 'uuid';
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import Deck from "./deck";
+import cardMap from "./cardMap";
 
 // TODO - Remove this
 let count = 0;
@@ -97,10 +99,21 @@ export default class SocketHelper {
 
     private setupCustomEvents = (socket: Socket) => {
         // CUSTOM EVENTS HERE
+				socket.on('deal_cards', (room) => {
+					const playerCards = this.dealCards();
+					this._io.to(room).emit('player_cards', playerCards);
+				})
     }
 
     private isValidCredentials = (username: string, lobbyname: string): boolean => {
         const regex = /^\w*\d*$/;
         return (regex.test(username) && regex.test(lobbyname)) ? true : false;
     }
+
+		private dealCards = () => {
+			const deck = new Deck(cardMap);
+			deck.shuffle();
+			const playerHands = deck.dealAllCards(4);
+			return playerHands;
+		}
 }
