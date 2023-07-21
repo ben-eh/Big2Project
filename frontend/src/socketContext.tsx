@@ -5,6 +5,7 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 export type Player = {
     id: string;
     username: string;
+		playerNumber: number;
 }
 
 export type SocketContextData = {
@@ -46,7 +47,8 @@ const SocketProvider = ({ url, children }: Props) => {
 
     useEffect(() => {
         const socket = io(url);
-        socket.on('connected_to_room', () => {
+        socket.on('connected_to_room', (playerNumber) => {
+						setPlayerNumber(playerNumber);
             setIsConnected(true);
         });
         socket.on('player_connected', (newPlayerList: Player[]) => {
@@ -64,9 +66,9 @@ const SocketProvider = ({ url, children }: Props) => {
     }, [url]);
 
     const connectToRoom = (username: string, roomName: string) => {
-        socket && socket.emit('connect_to_room', { username, roomName });
-        setUsername(username);
-        setRoom(roomName);
+				socket && socket.emit('connect_to_room', { username, roomName });
+				setUsername(username);
+				setRoom(roomName);
     };
 
     const disconnectFromRoom = () => {

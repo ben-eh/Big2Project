@@ -77,7 +77,7 @@ export default class SocketHelper {
     
             const playerList = players.map(({ id, username, playerNumber }) => ({ id, username, playerNumber }));
             this._io.to(roomName).emit('player_connected', playerList);
-            socket.emit('connected_to_room');
+            socket.emit('connected_to_room', playerNumber);
         });
     }
 
