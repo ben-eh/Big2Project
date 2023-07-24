@@ -1,13 +1,16 @@
 type Attributes = {
 	name: string;
 	hand: string[];
+	isCurrentPlayer: boolean;
 }
 
 const OtherPlayer = (attributes: Attributes) => {
 	return (
 		<div className="otherPlayerDivParent">
-			<div>{attributes.name}</div>
 			<div>
+				{attributes.name}
+			</div>
+			<div className={attributes.isCurrentPlayer ? 'activePlayerBackground' : ''}>
 				{
 					attributes.hand && attributes.hand.map((card) => {
 						return(
@@ -23,6 +26,9 @@ const OtherPlayer = (attributes: Attributes) => {
 			</div>
 			<div>
 				{  // this would potentially be the 'hidden' last card button
+					attributes.isCurrentPlayer && (
+						<p>testing</p>
+					)
 				}	
 			</div>
 		</div>

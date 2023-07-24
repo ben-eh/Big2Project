@@ -7,7 +7,7 @@ import cardMap from "./utils/cardMap";
 const GamePage = () => {
 
 	const [ currentPlayersTurn, setCurrentPlayersTurn ] = useState<number>(1);
-	const { username, playerNumber, players, sendEvent, playerHands, room } = useSocket();
+	const { username, playerNumber, players, sendEvent, playerHands, room, activePlayer } = useSocket();
 
 	const handleDealCards = () => {
 		sendEvent('deal_cards', room);
@@ -21,12 +21,14 @@ const GamePage = () => {
 	// 	setPlayerHands(playerHands);
 	// 	console.log(playerNumber);
 	// }, []);
+
+	console.log(`active player is ${activePlayer}`);
 	
 	const isGameStarted = () => playerHands !== undefined;
 	
 	// this function finds a player by player number, this does not care about our (socket's) playerNumber
-	const findPlayerByPlayerNumber = (playerNumber: number): Player => {
-		const validatedPlayerNumber = playerNumber === 4 ? 4 : playerNumber % 4;
+	const findPlayerByPlayerNumber = (value: number): Player => {
+		const validatedPlayerNumber = value === 4 ? 4 : value % 4;
 		const playersList: Player[] = players.filter((player) => validatedPlayerNumber === player.playerNumber);
 		return playersList[0];
 	}
@@ -52,20 +54,41 @@ const GamePage = () => {
 		return playerHands[player.playerNumber];
 	}
 
+	const getPlayerNumber = (offset: number): number => {
+		if (playerNumber === undefined) {
+			return 0;
+		}
+		const player = findPlayerByPlayerNumber(playerNumber + offset);
+		console.log(`player number is ${player.playerNumber}`);
+		return player.playerNumber;
+	}
+
 	return(
 		<div className="fullSizeGameDiv">
 			<div className="topDiv flex-items-center">
-				<OtherPlayer name={shouldShowPlayer(2) ? getUsername(2) : 'waiting on player'} hand={shouldShowPlayer(2) ? getPlayerHand(2): []} />
+				<OtherPlayer
+					name={shouldShowPlayer(2) ? getUsername(2) : 'waiting on player'}
+					hand={shouldShowPlayer(2) ? getPlayerHand(2): []}
+					isCurrentPlayer={shouldShowPlayer(2) && activePlayer === getPlayerNumber(2)}
+				/>
 			</div>
 			<div className="middleDiv">
 				<div className="smallMiddle flex-items-center">
-					<OtherPlayer name={shouldShowPlayer(1) ? getUsername(1) : 'waiting on player'} hand={shouldShowPlayer(1) ? getPlayerHand(1): []} />
+				<OtherPlayer
+					name={shouldShowPlayer(1) ? getUsername(1) : 'waiting on player'}
+					hand={shouldShowPlayer(1) ? getPlayerHand(1): []}
+					isCurrentPlayer={shouldShowPlayer(1) && activePlayer === getPlayerNumber(1)}
+				/>
 				</div>
 				<div className="middleCentre">
 					middleCentre
 				</div>
 				<div className="smallMiddle flex-items-center">
-					<OtherPlayer name={shouldShowPlayer(3) ? getUsername(3) : 'waiting on player'} hand={shouldShowPlayer(4) ? getPlayerHand(4): []} />
+				<OtherPlayer
+					name={shouldShowPlayer(3) ? getUsername(3) : 'waiting on player'}
+					hand={shouldShowPlayer(3) ? getPlayerHand(3): []}
+					isCurrentPlayer={shouldShowPlayer(3) && activePlayer === getPlayerNumber(3)}
+				/>
 				</div>
 			</div>
 			<div className="bottomDiv">

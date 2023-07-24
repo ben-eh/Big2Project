@@ -3,6 +3,7 @@ import { Server, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import Deck from "./deck";
 import cardMap from "./cardMap";
+import Game from "./game";
 
 // TODO - Remove this
 let count = 0;
@@ -100,8 +101,10 @@ export default class SocketHelper {
     private setupCustomEvents = (socket: Socket) => {
         // CUSTOM EVENTS HERE
 				socket.on('deal_cards', (room) => {
-					const playerCards = this.dealCards();
-					this._io.to(room).emit('player_cards', playerCards);
+					const game = new Game();
+					const {playerHands, activePlayer} = game.startGame();
+					this._io.to(room).emit('player_cards', playerHands);
+					this._io.to(room).emit('active_player', activePlayer);
 				})
     }
 
@@ -110,10 +113,4 @@ export default class SocketHelper {
         return (regex.test(username) && regex.test(lobbyname)) ? true : false;
     }
 
-		private dealCards = () => {
-			const deck = new Deck(cardMap);
-			deck.shuffle();
-			const playerHands = deck.dealAllCards(4);
-			return playerHands;
-		}
 }
