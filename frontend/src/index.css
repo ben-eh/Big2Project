@@ -72,6 +72,11 @@
 	margin-left: -7.5rem;
 }
 
+.middleCardSize {
+	width: 100px;
+	margin-left: -7.5rem;
+}
+
 .cardSize:hover {
 	border: 3px solid rgb(7, 151, 176);
 	transform: translate(0, -8rem);

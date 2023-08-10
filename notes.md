@@ -5,3 +5,5 @@
 	2. rooms should max out once 4 people are logged in (i.e. no one else should be able to join)
 - should I be concerned about using my PC as a server to host the game for my buddies and I? (i.e. getting hacked)
 - 
+
+#working on checking for valid hands played, got to full house and still working on that

@@ -6,11 +6,18 @@ import cardMap from "./utils/cardMap";
 
 const GamePage = () => {
 
-	const [ currentPlayersTurn, setCurrentPlayersTurn ] = useState<number>(1);
-	const { username, playerNumber, players, sendEvent, playerHands, room, activePlayer } = useSocket();
+	const { username, playerNumber, players, sendEvent, playerHands, room, activePlayer, middleCards } = useSocket();
 
 	const handleDealCards = () => {
 		sendEvent('deal_cards', room);
+	}
+
+	const handlePlayCards = (card: string) => {
+		if (activePlayer === playerNumber) {
+			sendEvent('play_card', {card, room})
+		} else {
+			alert('it\'s not your turn, jabroni!')
+		}
 	}
 	
 	// useEffect(() => {
@@ -22,8 +29,6 @@ const GamePage = () => {
 	// 	console.log(playerNumber);
 	// }, []);
 
-	console.log(`active player is ${activePlayer}`);
-	
 	const isGameStarted = () => playerHands !== undefined;
 	
 	// this function finds a player by player number, this does not care about our (socket's) playerNumber
@@ -59,7 +64,6 @@ const GamePage = () => {
 			return 0;
 		}
 		const player = findPlayerByPlayerNumber(playerNumber + offset);
-		console.log(`player number is ${player.playerNumber}`);
 		return player.playerNumber;
 	}
 
@@ -81,7 +85,21 @@ const GamePage = () => {
 				/>
 				</div>
 				<div className="middleCentre">
-					middleCentre
+					<div>
+						{
+							middleCards && middleCards.map((card) => {
+								return(
+									<img
+										key={card}
+										className="middleCardSize"
+										src={`./assets/cards/${cardMap[card]}`}
+										alt="whatever"
+										onClick={e => handlePlayCards(card)}
+									/>
+								)
+							})
+						}
+					</div>
 				</div>
 				<div className="smallMiddle flex-items-center">
 				<OtherPlayer
@@ -92,7 +110,8 @@ const GamePage = () => {
 				</div>
 			</div>
 			<div className="bottomDiv">
-				<div className="myCards">
+				{/* <div className="myCards"> */}
+				<div className={playerNumber === activePlayer ? 'myCards activePlayerBackground' : ''}>
 					{/* <img src="./assets/cards/ace_of_hearts.png" alt="" /> */}
 					{
 						playerHands && playerNumber && playerHands[playerNumber] && simpleSortHand(playerHands[playerNumber]).map((card: string) => {
@@ -101,7 +120,8 @@ const GamePage = () => {
 									key={card}
 									className="cardSize"
 									src={`./assets/cards/${cardMap[card]}`}
-									alt="whatever" 
+									alt="whatever"
+									onClick={e => handlePlayCards(card)}
 								/>
 							)
 						})
@@ -123,21 +143,3 @@ const GamePage = () => {
 }
 
 export default GamePage;
-
-const playas = [
-	{
-		id: '1234',
-		username: 'benno',
-		playerNumber: 1
-	},
-	{
-		id: '2345',
-		username: 'brando',
-		playerNumber: 2
-	}
-]
-
-function sendEvent(arg0: string) {
-	throw new Error("Function not implemented.");
-}
-

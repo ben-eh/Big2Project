@@ -16,6 +16,7 @@ export type SocketContextData = {
     username?: string;
     room?: string;
 		playerHands?: any;
+		middleCards?: string[];
 		activePlayer?: number;
     connectToRoom: (username: string, roomName: string) => void;
     disconnectFromRoom: () => void;
@@ -48,6 +49,7 @@ const SocketProvider = ({ url, children }: Props) => {
     const [playerNumber, setPlayerNumber] = useState<number>();
 		const [playerHands, setPlayerHands] = useState<any>();
 		const [activePlayer, setActivePlayer] = useState<number>();
+		const [middleCards, setMiddleCards] = useState<string[]>([]);
 
     useEffect(() => {
         const socket = io(url);
@@ -90,12 +92,17 @@ const SocketProvider = ({ url, children }: Props) => {
         socket && socket.on(event, callback);
     };
 
-		listenForEvent('player_cards', (data) => {
-			setPlayerHands(data);
+		listenForEvent('player_cards', (data: any) => {
+			setPlayerHands(data.playerHands);
+			setMiddleCards(data.middleCards);
 		})
 
 		listenForEvent('active_player', (data) => {
 			setActivePlayer(data);
+		})
+
+		listenForEvent('invalid_hand', (data) => {
+			alert(data);
 		})
 		
     return (
@@ -107,6 +114,7 @@ const SocketProvider = ({ url, children }: Props) => {
             username,
             room,
 						playerHands,
+						middleCards,
 						activePlayer,
             connectToRoom,
             disconnectFromRoom,
