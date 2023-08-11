@@ -56,14 +56,14 @@ export const isValidHand = (cardsPlayed: string[], activeHandType: HandType, mid
 	}
 }
 
-const isValidSingles = (cardsPlayed: string[], middleCards: string[]): boolean => {
+export const isValidSingles = (cardsPlayed: string[], middleCards: string[]): boolean => {
 	// get suit and value for each card
 	const cardPlayedMap: any = returnMappedCardsPlayed(cardsPlayed);
+	const middleCardMap: any = returnMappedCardsPlayed(middleCards);
 
 	// Get all needed card values
 	const cardPlayedValue: number = getActualCardValueFromFaceValue(parseInt(Object.keys(cardPlayedMap)[0]));
 	const cardPlayedSuitValue: number = getSuitValueFromCardValue(Object.values(cardPlayedMap)[0] as string);
-	const middleCardMap: any = returnMappedCardsPlayed(middleCards);
 	const middleCardValue: number = getActualCardValueFromFaceValue(parseInt(Object.keys(middleCardMap)[0]));
 	const middleCardSuitValue: number = getSuitValueFromCardValue(Object.values(middleCardMap)[0] as string);
 
@@ -79,11 +79,12 @@ const isValidSingles = (cardsPlayed: string[], middleCards: string[]): boolean =
 	return false;
 }
 
-const isValidDoubles = (cardsPlayed: string[], middleCards: string[]): boolean => {
+export const isValidDoubles = (cardsPlayed: string[], middleCards: string[]): boolean => {
 	// get suit and value for each card
 	const cardsPlayedMap: any = returnMappedCardsPlayed(cardsPlayed);
 	const cardsPlayedValue: number = getActualCardValueFromFaceValue(parseInt(Object.keys(cardsPlayedMap)[0]));
 	const cardsPlayedHighestSuitValue: number = getSuitValueFromCardValueForDoubles(Object.values(cardsPlayedMap));
+	console.log(cardsPlayedHighestSuitValue);
 
 	const middleCardsMap: any = returnMappedCardsPlayed(middleCards);
 	const middleCardsValue: number = getActualCardValueFromFaceValue(parseInt(Object.keys(middleCardsMap)[0]));
@@ -101,7 +102,7 @@ const isValidDoubles = (cardsPlayed: string[], middleCards: string[]): boolean =
 	return false;
 }
 
-const isValidTriples = (cardsPlayed: string[], middleCards: string[]): boolean => {
+export const isValidTriples = (cardsPlayed: string[], middleCards: string[]): boolean => {
 	// get suit and value for each card
 	const cardsPlayedMap: any = returnMappedCardsPlayed(cardsPlayed);
 	const cardsPlayedValue: number = getActualCardValueFromFaceValue(parseInt(Object.keys(cardsPlayedMap)[0]));
