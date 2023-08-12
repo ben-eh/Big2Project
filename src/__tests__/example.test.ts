@@ -1,4 +1,4 @@
-import { isValidHand, isValidSingles, isValidDoubles, isValidTriples } from "../hand-helper";
+import { isValidHand, isValidSingles, isValidDoubles, isValidTriples, isValidStraight } from "../hand-helper";
 
 // describe('isValidHand test suite', () => {
 // 	test('', () => {
@@ -165,5 +165,13 @@ describe('isValidHand main function poker hand', () => {
 		const activeHandType = 'pokerHand';
 		const validHandTest = isValidHand(cardsPlayed, activeHandType, middleCards);
 		expect(validHandTest).toEqual(true);
+	})
+})
+
+describe('isValidStraight', () => {
+	test('should be a valid straight', () => {
+		const cardsPlayed = ['d4', 'c6', 's5', 'd8', 'h7'];
+		const isValid = isValidStraight(cardsPlayed);
+		expect(isValid).toEqual(true);
 	})
 })
