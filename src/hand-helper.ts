@@ -329,18 +329,22 @@ const isWinningStraightHand = (cardsPlayed: string[], middleCards: string[]): bo
 		Returns: 		boolean - if the given list of cards is a straight
 */
 export const isValidStraight = (cardsPlayed: string[]): boolean => {
-	// // sort the cards from lowest to largest value
-	// const cardValues: number[] = cardsPlayed.map((card: string) => {
-	// 	// TODO - refactor this to use mapping from frontend
-	// 	return parseInt(card.slice(1)) === 1 ? 14 : parseInt(card.slice(1));
-	// })
-	// const sortedCards: number[] = cardValues.sort((a: number, b: number) => {
-	// 	return a - b;
-	// })
 	const sortedCards: number[] = straightSorter(cardsPlayed);
+
 	// make sure that each consecutive card's value is ONLY one higher than the previous card
 	for (let i = 0; i < (sortedCards.length - 1); i++) {
-		if (sortedCards[i] !== (sortedCards[i + 1] + 1)) {
+
+		// The value we are currently looking at 
+		const cValue: number = sortedCards[i];
+
+		// The next value in the sorted list
+		const nValue: number = sortedCards[i+1];
+
+		// What the next value should be
+		const expected: number = cValue + 1;
+
+		// Check the values
+		if (nValue !== expected) {
 			return false;
 		}
 	}
