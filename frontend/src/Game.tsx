@@ -3,9 +3,11 @@ import OtherPlayer from "./components/OtherPlayer";
 import { simpleSortHand } from "./utils/hands";
 import { Player, useSocket } from "./socketContext";
 import cardMap from "./utils/cardMap";
+import { returnMappedCardsPlayed } from "./utils/handSorter";
 
 const GamePage = () => {
 
+	const [ currentSortedHand, setCurrentSortedHand ] = useState<string[]>([]);
 	const { username, playerNumber, players, sendEvent, playerHands, room, activePlayer, middleCards } = useSocket();
 
 	const handleDealCards = () => {
@@ -20,14 +22,22 @@ const GamePage = () => {
 		}
 	}
 	
-	// useEffect(() => {
-	// 	const deck = new Deck(cardMap);
-	// 	deck.shuffle();
-	// 	const playerHands = deck.dealAllCards(4);
-	// 	playerHands[1] = simpleSortHand(playerHands[1]);
-	// 	setPlayerHands(playerHands);
-	// 	console.log(playerNumber);
-	// }, []);
+	const autoSortCardsIntoPokerHands = (firstPersonPlayerHand: string[]) => {
+		const sortedHand = pokerHandSort(firstPersonPlayerHand);
+		setCurrentSortedHand(sortedHand)
+		console.log(sortedHand);
+	}
+
+	const pokerHandSort = (cards: string[]): string[] => {
+		const mappedCards = returnMappedCardsPlayed(cards);
+		console.log(mappedCards);
+		return ['whatever'];
+	}
+	
+	useEffect(() => {
+		if (!playerNumber) return;
+		autoSortCardsIntoPokerHands(playerHands[playerNumber]);
+	}, [playerHands]);
 
 	const isGameStarted = () => playerHands !== undefined;
 	
@@ -111,7 +121,10 @@ const GamePage = () => {
 			</div>
 			<div className="bottomDiv">
 				{/* <div className="myCards"> */}
-				<div className={playerNumber === activePlayer ? 'myCards activePlayerBackground' : ''}>
+				<div className="bottom-left">
+					<h1>Scoreboard</h1>
+				</div>
+				<div className={playerNumber === activePlayer ? 'myCards activePlayerBackground bottom-center' : 'bottom-center'}>
 					{/* <img src="./assets/cards/ace_of_hearts.png" alt="" /> */}
 					{
 						playerHands && playerNumber && playerHands[playerNumber] && simpleSortHand(playerHands[playerNumber]).map((card: string) => {
@@ -126,6 +139,23 @@ const GamePage = () => {
 							)
 						})
 					}
+				</div>
+				<div className="bottom-right sortedCardsSection">
+					<div className="sortedCards">
+						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
+					</div>
+					<div className="sortedCards">
+						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
+					</div>
+					<div className="sortedCards">
+						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
+					</div>
+					<div className="sortedCards">
+						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
+					</div>
+					<div className="sortedCards">
+						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
+					</div>
 				</div>
 				<div>
 					{players.length === 4 && !isGameStarted() ? (

@@ -143,3 +143,31 @@
 	/* width: 50%; */
 	border-radius: 5%;
 }
+
+.sortedCardsSection {
+  /* flex: 0.3; */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1em;
+  align-items: center;
+}
+
+.sortedCards img {
+	width: 100px;
+}
+
+.bottom-left {
+	background-color: pink;
+	flex: 1;
+}
+
+.bottom-right {
+	background-color: brown;
+	flex: 1;
+}
+
+.bottom-center {
+	background-color:bisque;
+	flex: 1.5;
+}

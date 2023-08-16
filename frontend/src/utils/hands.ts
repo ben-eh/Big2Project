@@ -14,6 +14,11 @@ const numberValue: any = {
 	12: 12,
 	13: 13
 }
+
+export const getMappedFaceValue = (faceValue: number): number => {
+	return numberValue[faceValue];
+}
+
 const playerSortStyle: string = 'lefty';
 
 const getNumberArray = (hand: string[]): any[] => {

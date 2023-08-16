@@ -7,3 +7,7 @@ all the logic I just did...I still need 'can I play on top of middle cards' logi
 need advice on poker hand logic:
 
 1) I have 'isValidPokerHand' function which finds which poker hand it is (if it is one), should I return the type of poker hand as well? Seems like it would make sense
+
+straightSorter:
+a) what if there are like 6+ cards that make up a 'straight'
+b) should we check extremities of those straights to see if we could avoid breaking up doubles

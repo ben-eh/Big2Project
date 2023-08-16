@@ -10,6 +10,9 @@ import { isValidHand, isValidSingles, isValidDoubles, isValidTriples, isValidStr
 // 	});
 // })
 
+const straight = ['d4', 'c6', 's5', 'd8', 'h7'];
+const middleCards = ['s3', 'd4', 'c6', 'd5', 'c7'];
+
 describe('isValidHand test suite', () => {
 	test('singles - higher card than what\'s on table', () => {
 		const cardsPlayed = ['s5'];
@@ -173,5 +176,10 @@ describe('isValidStraight', () => {
 		const cardsPlayed = ['d4', 'c6', 's5', 'd8', 'h7'];
 		const isValid = isValidStraight(cardsPlayed);
 		expect(isValid).toEqual(true);
-	})
+	});
+	test('should be a valid straight, ace high', () => {
+		const cardsPlayed = ['d10', 'c11', 's13', 'd12', 'h1'];
+		const isValid = isValidStraight(cardsPlayed);
+		expect(isValid).toEqual(true);
+	});
 })

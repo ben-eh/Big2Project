@@ -27,7 +27,7 @@ const OtherPlayer = (attributes: Attributes) => {
 			<div>
 				{  // this would potentially be the 'hidden' last card button
 					attributes.isCurrentPlayer && (
-						<p>testing</p>
+						<p>Last card goes here</p>
 					)
 				}	
 			</div>

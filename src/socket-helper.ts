@@ -104,10 +104,10 @@ export default class SocketHelper {
 				socket.on('play_card', (data) => {
 					const {card, room} = data;
 					const cards = [card];
-					if (!isValidHand(cards)) {
-						socket.emit('invalid_hand', 'you can\'t play those cards');
-						return
-					}
+					// if (!isValidHand(cards)) {
+					// 	socket.emit('invalid_hand', 'you can\'t play those cards');
+					// 	return
+					// }
 					this._rooms[room].playSingleCard(card);
 					const cardsPlayedData = {playerHands: this._rooms[room].playerHands, middleCards: this._rooms[room].middleCards}
 					this._io.to(room).emit('player_cards', cardsPlayedData);
