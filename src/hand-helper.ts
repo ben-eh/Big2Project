@@ -36,9 +36,11 @@ const numberValue: any = {
 /* 
 		Descirption: 	Determines if a given hand is valid to play
 		Parameters: 	cardsPlayed - The list of cards to check
+									activeHandType - the type of hand that was previously played that we must follow (i.e. singles, doubles, poker hand)
+									middleCards - the cards visible in the middle of the table, the last cards thrown that need to be beat in order to play)
 		Returns: 		boolean - If the given list of cards is valid to play
 */
-export const isValidHand = (cardsPlayed: string[], activeHandType: HandType, middleCards: string[]): boolean => {
+export const isValidHand = (cardsPlayed: string[], activeHandType: HandType | undefined, middleCards: string[]): boolean => {
 	// first person playing can play whatever hand type they want
 	if (activeHandType === undefined) return true;
 

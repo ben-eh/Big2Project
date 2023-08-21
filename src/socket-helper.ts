@@ -93,31 +93,44 @@ export default class SocketHelper {
     private setupCustomEvents = (socket: Socket) => {
         // CUSTOM EVENTS HERE
 
-				// deal out the cards and pass 'activePlayer' variable as well
-				socket.on('deal_cards', (room) => {
-					this._rooms[room].startGame();
-					this._io.to(room).emit('player_cards', {playerHands: this._rooms[room].playerHands, middleCards: this._rooms[room].middleCards});
-					this._io.to(room).emit('active_player', this._rooms[room].activePlayer);
-				})
+        // deal out the cards and pass 'activePlayer' variable as well
+        socket.on('deal_cards', (room) => {
+            this._rooms[room].startGame();
+            this._io.to(room).emit('player_cards', {playerHands: this._rooms[room].playerHands, middleCards: this._rooms[room].middleCards});
+            this._io.to(room).emit('active_player', this._rooms[room].activePlayer);
+        })
 
-				// play a single card
-				socket.on('play_card', (data) => {
-					const {card, room} = data;
-					const cards = [card];
-					// if (!isValidHand(cards)) {
-					// 	socket.emit('invalid_hand', 'you can\'t play those cards');
-					// 	return
-					// }
-					this._rooms[room].playSingleCard(card);
-					const cardsPlayedData = {playerHands: this._rooms[room].playerHands, middleCards: this._rooms[room].middleCards}
-					this._io.to(room).emit('player_cards', cardsPlayedData);
-					this._io.to(room).emit('active_player', this._rooms[room].activePlayer);
-				})
+        // play a single card
+        socket.on('play_card', (data) => {
+            const {cards, room} = data;
+            const game = this.getMyGameFromRoom(room);
+            const activeHandType = game.activeHandType;
+            const middleCards = game.middleCards;
+            if (!isValidHand(cards, activeHandType, middleCards)) {
+                socket.emit('invalid_hand', 'you can\'t play those cards');
+                return
+            }
+            this._rooms[room].playCards(cards);
+            const cardsPlayedData = {playerHands: this._rooms[room].playerHands, middleCards: this._rooms[room].middleCards}
+            this._io.to(room).emit('player_cards', cardsPlayedData);
+            this._io.to(room).emit('active_player', this._rooms[room].activePlayer);
+        })
+
+        socket.on('skip_turn', (data) => {
+					// Run backend code here
+					const {activePlayer, room} = data;
+					const newTurn = activePlayer === 4 ? 1 : activePlayer + 1;
+					this._io.to(room).emit('updated_turn_from_skip', newTurn);
+        });
     }
 
     private isValidCredentials = (username: string, lobbyname: string): boolean => {
         const regex = /^\w*\d*$/;
         return (regex.test(username) && regex.test(lobbyname)) ? true : false;
     }
+
+		private getMyGameFromRoom = (roomName: string): Game => {
+			return this._rooms[roomName];
+		}
 
 }

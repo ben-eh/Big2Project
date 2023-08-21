@@ -8,18 +8,35 @@ import { returnMappedCardsPlayed } from "./utils/handSorter";
 const GamePage = () => {
 
 	const [ currentSortedHand, setCurrentSortedHand ] = useState<string[]>([]);
+	const [ temporaryCardsToPlay, setTemporaryCardsToPlay ] = useState<string[]>([]);
 	const { username, playerNumber, players, sendEvent, playerHands, room, activePlayer, middleCards } = useSocket();
 
 	const handleDealCards = () => {
 		sendEvent('deal_cards', room);
 	}
 
-	const handlePlayCards = (card: string) => {
+	const selectCard = (card: string) => {
 		if (activePlayer === playerNumber) {
-			sendEvent('play_card', {card, room})
+			let newList = [...temporaryCardsToPlay];
+			if ( temporaryCardsToPlay.includes(card) ) {
+				newList = newList.filter((el) => {
+					return el !== card;
+				})
+			} else {
+				newList.push(card);
+			}
+			setTemporaryCardsToPlay(newList);
 		} else {
 			alert('it\'s not your turn, jabroni!')
 		}
+	}
+	
+	const handleSkippedTurn = () => {
+		sendEvent('skip_turn', {activePlayer, room});
+	}
+	
+	const handlePlaySelectedCards = () => {
+		sendEvent('play_card', {cards: temporaryCardsToPlay, room})
 	}
 	
 	const autoSortCardsIntoPokerHands = (firstPersonPlayerHand: string[]) => {
@@ -34,10 +51,10 @@ const GamePage = () => {
 		return ['whatever'];
 	}
 	
-	useEffect(() => {
-		if (!playerNumber) return;
-		autoSortCardsIntoPokerHands(playerHands[playerNumber]);
-	}, [playerHands]);
+	// useEffect(() => {
+	// 	if (!playerNumber) return;
+	// 	autoSortCardsIntoPokerHands(playerHands[playerNumber]);
+	// }, [playerHands]);
 
 	const isGameStarted = () => playerHands !== undefined;
 	
@@ -104,7 +121,6 @@ const GamePage = () => {
 										className="middleCardSize"
 										src={`./assets/cards/${cardMap[card]}`}
 										alt="whatever"
-										onClick={e => handlePlayCards(card)}
 									/>
 								)
 							})
@@ -128,43 +144,44 @@ const GamePage = () => {
 					{/* <img src="./assets/cards/ace_of_hearts.png" alt="" /> */}
 					{
 						playerHands && playerNumber && playerHands[playerNumber] && simpleSortHand(playerHands[playerNumber]).map((card: string) => {
+							const isSelected = temporaryCardsToPlay.includes(card);
 							return(
 								<img
 									key={card}
-									className="cardSize"
+									className={isSelected ? `cardSize selectedCard` : `cardSize`}
 									src={`./assets/cards/${cardMap[card]}`}
 									alt="whatever"
-									onClick={e => handlePlayCards(card)}
+									onClick={e => selectCard(card)}
 								/>
 							)
 						})
 					}
 				</div>
-				<div className="bottom-right sortedCardsSection">
-					<div className="sortedCards">
-						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
-					</div>
-					<div className="sortedCards">
-						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
-					</div>
-					<div className="sortedCards">
-						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
-					</div>
-					<div className="sortedCards">
-						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
-					</div>
-					<div className="sortedCards">
-						<img src="https://media.gettyimages.com/id/471370693/photo/full-house.jpg?s=612x612&w=gi&k=20&c=Oy6Do9F1KHtv7DUrIvLhOTTpE-BJvM6lIRMsY1ItzA4=" alt="" />
-					</div>
-				</div>
 				<div>
-					{players.length === 4 && !isGameStarted() ? (
+					{players.length === 4 && !isGameStarted() && (
 						<div className="dealCardsButton"
 						onClick={handleDealCards}
 						>
 							DEAL CARDS
 						</div>
-					) : null}
+					)}
+				</div>
+				<div>
+					{temporaryCardsToPlay.length > 0 && (
+						<div className="dealCardsButton"
+							onClick={handlePlaySelectedCards} >
+							Play Cards
+						</div>
+					)}
+				</div>
+				<div>
+					{isGameStarted() && playerNumber === activePlayer &&(
+						<div className="dealCardsButton"
+						onClick={handleSkippedTurn}
+						>
+							Skip
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

@@ -2,7 +2,7 @@ import { createReadStream } from "fs"
 import Deck from "./deck"
 import cardMap from "./cardMap";
 import { Socket } from "socket.io";
-import { HandType } from "./hand-helper";
+import { HandType, typeOfHandPlayed } from "./hand-helper";
 
 type UserInfo = {
 	id: string;
@@ -58,12 +58,12 @@ export default class Game {
 		return playerNumber;
 	}
 
-	playSingleCard = (card: string) => {
-		this.middleCards = [];
-		this.middleCards.push(card);
+	playCards = (cards: string[]) => {
+		this.middleCards = [...cards];
+		this.activeHandType = typeOfHandPlayed(cards);
 		const relevantHand: string[] = this.playerHands[this.activePlayer];
 		const newHand = relevantHand.filter((currentCard) => {
-			return currentCard !== card;
+			return !cards.includes(currentCard);
 		})
 		this.playerHands[this.activePlayer] = newHand;
 		this.activePlayer === 4 ? this.activePlayer = 1 : this.activePlayer ++;

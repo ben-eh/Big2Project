@@ -2,6 +2,17 @@ import { createContext, useState, useContext, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
+
+/*
+
+  UI <---> socketContext <---> socket-helper <---> Backend
+
+  Messages are sent between the socketContext (Frontend) and the socket-helper (Backend).
+  Both can send and receive events.
+
+*/
+
+
 export type Player = {
     id: string;
     username: string;
@@ -74,6 +85,25 @@ const SocketProvider = ({ url, children }: Props) => {
         setSocket(socket);
     }, [url]);
 
+		useEffect(() => {
+			listenForEvent('player_cards', (data: any) => {
+				setPlayerHands(data.playerHands);
+				setMiddleCards(data.middleCards);
+			})
+	
+			listenForEvent('active_player', (data) => {
+				setActivePlayer(data);
+			})
+	
+			listenForEvent('invalid_hand', (data) => {
+				alert(data);
+			})
+
+			listenForEvent('updated_turn_from_skip', (newTurnNumber) => {
+				setActivePlayer(newTurnNumber);
+			})
+		}, [socket]);
+
     const connectToRoom = (username: string, roomName: string) => {
 				socket && socket.emit('connect_to_room', { username, roomName });
 				setUsername(username);
@@ -84,27 +114,16 @@ const SocketProvider = ({ url, children }: Props) => {
         room && socket && socket.disconnect();
     };
 
+    // Send a message to the socket-helper on the backend
     const sendEvent = (event: string, data?: any) => {
         socket && socket.emit(event, data);
     };
 
+    //
     const listenForEvent = (event: string, callback: (data?: any) => void) => {
         socket && socket.on(event, callback);
     };
 
-		listenForEvent('player_cards', (data: any) => {
-			setPlayerHands(data.playerHands);
-			setMiddleCards(data.middleCards);
-		})
-
-		listenForEvent('active_player', (data) => {
-			setActivePlayer(data);
-		})
-
-		listenForEvent('invalid_hand', (data) => {
-			alert(data);
-		})
-		
     return (
         <SocketContext.Provider value={{
 						playerNumber,

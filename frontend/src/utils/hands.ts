@@ -1,5 +1,5 @@
 const suitValue: any = { 'd': 0, 'c': 1, 'h': 2, 's': 3 };
-const numberValue: any = {
+export const numberValue: any = {
 	1: 14,
 	2: 15,
 	3: 3,
