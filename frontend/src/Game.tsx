@@ -4,12 +4,24 @@ import { simpleSortHand } from "./utils/hands";
 import { Player, useSocket } from "./socketContext";
 import cardMap from "./utils/cardMap";
 import { returnMappedCardsPlayed } from "./utils/handSorter";
+import { log } from "console";
 
 const GamePage = () => {
 
 	const [ currentSortedHand, setCurrentSortedHand ] = useState<string[]>([]);
 	const [ temporaryCardsToPlay, setTemporaryCardsToPlay ] = useState<string[]>([]);
-	const { username, playerNumber, players, sendEvent, playerHands, room, activePlayer, middleCards } = useSocket();
+	const { 
+		username,
+		playerNumber, 
+		players, 
+		sendEvent, 
+		playerHands, 
+		room, 
+		activePlayer, 
+		middleCards,
+		playerCannotSkip,
+		playerScores
+	} = useSocket();
 
 	const handleDealCards = () => {
 		sendEvent('deal_cards', room);
@@ -26,17 +38,25 @@ const GamePage = () => {
 				newList.push(card);
 			}
 			setTemporaryCardsToPlay(newList);
+			console.log(temporaryCardsToPlay);
 		} else {
 			alert('it\'s not your turn, jabroni!')
 		}
 	}
+
+	console.log(playerScores);
+	
+	const canSkip = (): boolean => {
+		return (middleCards !== undefined && middleCards.length > 0);
+	}
 	
 	const handleSkippedTurn = () => {
-		sendEvent('skip_turn', {activePlayer, room});
+		sendEvent('skip_turn', {room});
 	}
 	
 	const handlePlaySelectedCards = () => {
-		sendEvent('play_card', {cards: temporaryCardsToPlay, room})
+		sendEvent('play_cards', {cards: temporaryCardsToPlay, room})
+		setTemporaryCardsToPlay([]);
 	}
 	
 	const autoSortCardsIntoPokerHands = (firstPersonPlayerHand: string[]) => {
@@ -68,6 +88,16 @@ const GamePage = () => {
 	// this is just a check to make sure that we can find a player by their playerNumber
 	const shouldShowPlayer = (offset: number): boolean => {
 		return playerNumber !== undefined && findPlayerByPlayerNumber(playerNumber + offset) !== undefined;
+	}
+
+	const getPlayerNameByID = (id: string): string => {
+		const filteredPlayers = players.filter((player: Player) => {
+			return player.id === id;
+		});
+		console.log(id);
+		console.log(filteredPlayers);
+		// return filteredPlayers[0].username;
+		return 'whatever';
 	}
 
 	const getUsername = (offset: number): string => {
@@ -139,6 +169,39 @@ const GamePage = () => {
 				{/* <div className="myCards"> */}
 				<div className="bottom-left">
 					<h1>Scoreboard</h1>
+					<div>
+						<div>
+							<h5></h5>
+							{
+								playerScores && Object.keys(playerScores).map((playerID) => {
+									return(
+										<h5>{getPlayerNameByID(playerID)}</h5>
+									)
+								})
+							}
+						</div>
+						<div>
+							<p>Round 1</p>
+							<p>2</p>
+							<p>0</p>
+							<p>20</p>
+							<p>7</p>
+						</div>
+						<div>
+							<p>Round 2</p>
+							<p>0</p>
+							<p>8</p>
+							<p>3</p>
+							<p>5</p>
+						</div>
+						<div>
+							<p>Total</p>
+							<p>2</p>
+							<p>8</p>
+							<p>23</p>
+							<p>12</p>
+						</div>
+					</div>
 				</div>
 				<div className={playerNumber === activePlayer ? 'myCards activePlayerBackground bottom-center' : 'bottom-center'}>
 					{/* <img src="./assets/cards/ace_of_hearts.png" alt="" /> */}
@@ -175,7 +238,7 @@ const GamePage = () => {
 					)}
 				</div>
 				<div>
-					{isGameStarted() && playerNumber === activePlayer &&(
+					{isGameStarted() && playerNumber === activePlayer && canSkip() && (
 						<div className="dealCardsButton"
 						onClick={handleSkippedTurn}
 						>

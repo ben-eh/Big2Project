@@ -45,17 +45,22 @@ export const isValidHand = (cardsPlayed: string[], activeHandType: HandType | un
 	if (activeHandType === undefined) return true;
 
 	// check to see that person is playing same type of hand, return false if not
-	const handType: HandType = typeOfHandPlayed(cardsPlayed);
-	if (handType !== activeHandType) return false;
+	try {
+		const handType: HandType = typeOfHandPlayed(cardsPlayed);
+		if (handType !== activeHandType) return false;
 
-	// check to see if hand being played can legally beat hand on table
-	switch (handType) {
-		case 'singles': return isValidSingles(cardsPlayed, middleCards);
-		case 'doubles': return isValidDoubles(cardsPlayed, middleCards);
-		case 'triples': return isValidTriples(cardsPlayed, middleCards);
-		case 'pokerHand': return canPlayPokerHand(cardsPlayed, middleCards);
-		default: return false;
+		// check to see if hand being played can legally beat hand on table
+		switch (handType) {
+			case 'singles': return isValidSingles(cardsPlayed, middleCards);
+			case 'doubles': return isValidDoubles(cardsPlayed, middleCards);
+			case 'triples': return isValidTriples(cardsPlayed, middleCards);
+			case 'pokerHand': return canPlayPokerHand(cardsPlayed, middleCards);
+			default: return false;
+		}
+	} catch (error) {
+		return false;
 	}
+	
 }
 
 export const isValidSingles = (cardsPlayed: string[], middleCards: string[]): boolean => {
@@ -86,7 +91,6 @@ export const isValidDoubles = (cardsPlayed: string[], middleCards: string[]): bo
 	const cardsPlayedMap: any = returnMappedCardsPlayed(cardsPlayed);
 	const cardsPlayedValue: number = getActualCardValueFromFaceValue(parseInt(Object.keys(cardsPlayedMap)[0]));
 	const cardsPlayedHighestSuitValue: number = getSuitValueFromCardValueForDoubles(Object.values(cardsPlayedMap));
-	console.log(cardsPlayedHighestSuitValue);
 
 	const middleCardsMap: any = returnMappedCardsPlayed(middleCards);
 	const middleCardsValue: number = getActualCardValueFromFaceValue(parseInt(Object.keys(middleCardsMap)[0]));

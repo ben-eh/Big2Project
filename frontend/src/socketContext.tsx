@@ -29,6 +29,8 @@ export type SocketContextData = {
 		playerHands?: any;
 		middleCards?: string[];
 		activePlayer?: number;
+		playerCannotSkip?: boolean;
+		playerScores?: any;
     connectToRoom: (username: string, roomName: string) => void;
     disconnectFromRoom: () => void;
     sendEvent: (event: string, data?: any) => void;
@@ -61,6 +63,9 @@ const SocketProvider = ({ url, children }: Props) => {
 		const [playerHands, setPlayerHands] = useState<any>();
 		const [activePlayer, setActivePlayer] = useState<number>();
 		const [middleCards, setMiddleCards] = useState<string[]>([]);
+		const [playerCannotSkip, setPlayerCannotSkip] = useState<boolean>(true);
+		const [playerScores, setPlayerScores] = useState<any>();
+		// const [passQuantity, setPassQuantity] = useState<number>(0);
 
     useEffect(() => {
         const socket = io(url);
@@ -91,16 +96,24 @@ const SocketProvider = ({ url, children }: Props) => {
 				setMiddleCards(data.middleCards);
 			})
 	
-			listenForEvent('active_player', (data) => {
+			listenForEvent('set_middle_cards', (data) => {
+				setMiddleCards(data);
+			})
+			
+			listenForEvent('set_active_player', (data) => {
 				setActivePlayer(data);
+			})
+
+			listenForEvent('set_player_cannot_skip', (data) => {
+				setPlayerCannotSkip(data);
 			})
 	
 			listenForEvent('invalid_hand', (data) => {
 				alert(data);
 			})
 
-			listenForEvent('updated_turn_from_skip', (newTurnNumber) => {
-				setActivePlayer(newTurnNumber);
+			listenForEvent('player_scores', (data) => {
+				setPlayerScores(data);
 			})
 		}, [socket]);
 
@@ -139,6 +152,8 @@ const SocketProvider = ({ url, children }: Props) => {
             disconnectFromRoom,
             sendEvent,
             listenForEvent,
+						playerCannotSkip,
+						playerScores
         }}>{children}</SocketContext.Provider>
     );
 };
