@@ -33,3 +33,13 @@ export type PlayerHands = {
 	'3': string[];
 	'4': string[];
 }
+
+export type UserDBWithID = {
+	_id: string;
+	username: string;
+	password: string;
+}
+
+export type UserDB = Omit<UserDBWithID, '_id'>
+
+export type UserDBWithoutPassword = Omit<UserDBWithID, 'password'>

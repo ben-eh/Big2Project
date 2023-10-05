@@ -1,37 +1,52 @@
-import { jsonFileToObject, objectToJsonFile } from "../utils/file-helper"
-import { v4 as uuidv4 } from 'uuid';
-
-type File = {
-	[id: string]: object;
-}
+import { Db, MongoClient, ObjectId } from 'mongodb';
 
 export default class Database {
-	private path: string;
+  private _client: MongoClient;
+  private _database: Db;
 
-	constructor(filepath: string) {
-		this.path = filepath;
-		console.log(filepath);
-	}
-	
-	public create = async <T>(newEntry: T): Promise<object> => {
-		const id = uuidv4();
-		const dbObject = await jsonFileToObject<File>(this.path);
-		dbObject[id] = {id, ...newEntry};
-		await objectToJsonFile(this.path, dbObject);
-		return dbObject[id];
-	}
+  constructor(uri: string) {
+    this._client = new MongoClient(uri);
+    this._database = this._client.db('Big2');
+  }
 
-	public getAll = async <T>(): Promise<T[]> => {
-		const dbObject = await jsonFileToObject<File>(this.path);
-		return Object.values(dbObject) as T[];
-	}
+  public connect = async (): Promise<void> => {
+    try {
+      await this._client.connect();
+      process.on('SIGINT', this.disconnect);
+      process.on('SIGTERM', this.disconnect);
+    } catch (error) {
+      throw new Error('Could not connect to database');
+    }
+  };
 
-	public getByField = async <T>(key: string, value: string): Promise<T | undefined> => {
-		const dbObject = await jsonFileToObject<File>(this.path);
-		const dbArray = Object.values(dbObject) as T[];
-		const filteredList = dbArray.filter((item:any) => {
-			return item[key] === value;
-		})
-		return filteredList[0];
-	}
+  public getCollection = async (collection: string, filter?: object) => {
+    return await this._database
+      .collection(collection)
+      .find({ ...filter })
+      .toArray();
+  };
+
+  public getDocumentById = async (collection: string, id: ObjectId) => {
+    return await this._database.collection(collection).findOne({ _id: id });
+  };
+
+  public createDocument = async (collection: string, data: Object) => {
+    return await this._database.collection(collection).insertOne(data);
+  };
+
+  public updateDocument = async (collection: string, id: ObjectId, data: Object) => {
+    return await this._database.collection(collection).updateOne({ _id: id }, { $set: data });
+  };
+
+  public deleteDocument = async (collection: string, id: ObjectId) => {
+    return await this._database.collection(collection).deleteOne({ _id: id });
+  };
+
+  public disconnect = async (): Promise<void> => {
+    try {
+      await this._client.close();
+    } catch (error) {
+      throw new Error('Could not disconnect from database');
+    }
+  };
 }

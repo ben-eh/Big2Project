@@ -125,6 +125,7 @@ const SocketProvider = ({ url, children }: Props) => {
 
     const disconnectFromRoom = () => {
         room && socket && socket.disconnect();
+				setIsConnected(false);
     };
 
     // Send a message to the socket-helper on the backend
