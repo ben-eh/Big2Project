@@ -16,19 +16,25 @@ export default class Deck {
 	}
 
 	dealAllCards = (numberOfPlayers: number): any => {
-		const players: any = {}
-		for(let i = 1; i <= numberOfPlayers; i++) {
-			players[i] = [];
+		const players = {
+			1: ['d12'],
+			2: ['s3', 's4'],
+			3: ['h5', 'h6', 'h7'],
+			4: ['c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12']
 		}
-		let player: number = 1;
-		while (this.deck.length > 0) {
-			const cardToBeDealt = this.deck.shift();
-			players[player].push(cardToBeDealt);
-			player++;
-			if (player > numberOfPlayers) {
-				player = 1;
-			}
-		}
+		// const players: any = {}
+		// for(let i = 1; i <= numberOfPlayers; i++) {
+		// 	players[i] = [];
+		// }
+		// let player: number = 1;
+		// while (this.deck.length > 0) {
+		// 	const cardToBeDealt = this.deck.shift();
+		// 	players[player].push(cardToBeDealt);
+		// 	player++;
+		// 	if (player > numberOfPlayers) {
+		// 		player = 1;
+		// 	}
+		// }
 		return players;
 	}
 

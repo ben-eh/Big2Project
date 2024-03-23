@@ -1,10 +1,9 @@
 import express, { Request, Response } from "express";
-import Database from "../database/Database";
 import { UserController } from "../controllers/users";
 
-export const createUsersRouter = (db: Database) => {
+export const createUsersRouter = () => {
 	const router = express.Router();
-	const userController = new UserController(db);
+	const userController = new UserController();
 	
 	router.post('/', userController.createUser)
 

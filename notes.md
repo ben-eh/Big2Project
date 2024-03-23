@@ -13,3 +13,7 @@
 - create useAuth hook using Context (to save token in LocalStorage)
 - show join room after logging in
 - setup stats using ID from token
+
+- create Game in DB when game starts
+- save Round to DB after each round finishes
+- patch Winner to Game in DB when game finally concludes

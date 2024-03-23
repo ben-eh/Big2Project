@@ -3,13 +3,12 @@ import IAuthenticationService from '../services/AuthenticationService/IAuthentic
 import { matchedData, validationResult } from 'express-validator';
 import { Credentials } from '../types/authentication';
 import AuthenticationService from '../services/AuthenticationService/AuthenticationService';
-import Database from '../database/Database';
 
 class AuthenticationController {
   _authenticationService: IAuthenticationService;
 
-  constructor(database: Database) {
-    this._authenticationService = new AuthenticationService(database);
+  constructor() {
+    this._authenticationService = new AuthenticationService();
   }
 
   public getToken = async (request: Request, response: Response, next: any) => {

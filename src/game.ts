@@ -4,6 +4,7 @@ import cardMap from "./cardMap";
 import { Socket } from "socket.io";
 import { HandType, typeOfHandPlayed } from "./hand-helper";
 import { PlayerHands } from "./database/types";
+import Database from "./database/database";
 
 type UserInfo = {
 	id: string;
@@ -52,10 +53,15 @@ export default class Game {
 		this.players = this.players.filter((player) => player.id !== socket.id);
 	}
 
-	startGame = (): any => {
+	startGame = async (): Promise<any> => {
 		this.startRound();
 		// decide who plays first
-		this.activePlayer = this.findPlayerWithD3(this.playerHands);
+		const players: string[] = [];
+		this.players.forEach((item) => players.push(item.id));
+
+		const insertResult = await Database.database().collection('games').insertOne({ players, date: new Date() });
+		// this.activePlayer = this.findPlayerWithD3(this.playerHands);
+		this.activePlayer = 1;
 	}
 
 	startRound = (): any => {
@@ -148,6 +154,7 @@ export default class Game {
 	// gameOver = () => {
 	// 	// Write to the database
 	// 	// const database = new Database();
+	// 	const data: 
 	// 	database.updateGameTable({
 	// 		id: 'random-generated',
 	// 		winner: '',
